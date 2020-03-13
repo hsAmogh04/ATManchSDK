@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'ATManchSDK_Example' do
+  pod 'ATManchSDK', :path => '../'
+
+  target 'ATManchSDK_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

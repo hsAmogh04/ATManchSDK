@@ -1,0 +1,6 @@
+framework module ATManchSDK {
+  umbrella header "ATManchSDK-umbrella.h"
+
+  export *
+  module * { export * }
+}

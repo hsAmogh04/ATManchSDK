@@ -1,0 +1,16 @@
+PODS:
+  - ATManchSDK (0.1.0)
+
+DEPENDENCIES:
+  - ATManchSDK (from `../`)
+
+EXTERNAL SOURCES:
+  ATManchSDK:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  ATManchSDK: 9e7c9ef7d4699d8dc1630f087024735a12aafdc8
+
+PODFILE CHECKSUM: 1edd19fc0221e17e769980d6b8cbcb0b5fc6084a
+
+COCOAPODS: 1.8.4

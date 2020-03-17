@@ -24,16 +24,16 @@ enum Result<String>{
 }
 
 struct NetworkManager {
-    static let environment : NetworkEnvironment = .dev
+    static var environment : NetworkEnvironment = .dev
     static var authenticationToken = ""
     static var requestId = ""
+    static var acceptTransaction = ""
     let router = Router<ManchApi>()
     
     
-    init(reqId: String, authToken: String) {
-        
-        NetworkManager.requestId =  reqId
-        NetworkManager.authenticationToken = authToken
+    init() {
+//        NetworkManager.requestId =  reqId
+//        NetworkManager.authenticationToken = authToken
     }
     
     

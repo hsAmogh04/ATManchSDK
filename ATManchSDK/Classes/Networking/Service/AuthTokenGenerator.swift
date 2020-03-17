@@ -38,9 +38,10 @@ enum CryptoAlgorithm {
         return Int(result)
     }
 }
-class AuthTokenGenerator {
+public class AuthTokenGenerator {
     
-    func generate(orgKey: String, reqId: String, securityKey: String) -> String {
+    public init() {}
+    public func generate(orgKey: String, reqId: String, securityKey: String) -> String {
         let message = orgKey + reqId
         return "HS256 \(orgKey):\(generateHashWithHmac256(message: message, securityKey: securityKey))"
     }

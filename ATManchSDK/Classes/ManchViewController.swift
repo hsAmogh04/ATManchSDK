@@ -21,6 +21,7 @@ class  ManchViewController: UIViewController ,WKNavigationDelegate {
     
     
     override func loadView() {
+        super.loadView()
         webView = WKWebView()
         
         webView.navigationDelegate = self

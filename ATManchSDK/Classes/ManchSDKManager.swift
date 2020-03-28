@@ -16,17 +16,21 @@ protocol ManchListener{
 
 public class ManchSDKManager : ManchListener{
     
-     public init() {}
+    public init() {
+//        self.reqI
+//         networkManager = NetworkManager(reqId: reqId, authToken: authToken)
+    }
     
     func eventCompleted(mode: Int, data: Any?) {
         switch mode {
         case 0:
-            if let txnUrl = data as? String , txnUrl.count > 0{
-                sendStatusRequest(docurl: txnUrl)
-            }else{
-                 sendStatusRequest(docurl: transactionUrl)
-            }
+//            if let txnUrl = data as? String , txnUrl.count > 0{
+//                sendStatusRequest(docurl: txnUrl)
+//            }else{
+//                 sendStatusRequest(docurl: transactionUrl)
+//            }
             //_completionHandler(true,"")
+             _completionHandler(true,data as? String ?? "")
         case 1:
 //             self.displayProgressDialog(msg:"Downloading document...")
 //            sendStatusRequest(docurl: "")
@@ -40,25 +44,27 @@ public class ManchSDKManager : ManchListener{
    
     
     var alert: UIAlertController?
-    var networkManager: NetworkManager!
+    var networkManager: NetworkManager?
     
     var transactionUrl = "";
     
     var viewController : UIViewController?
-    public typealias handler = (Bool, String) -> Void
+    public typealias handler = (Bool, String) -> ()
     var _completionHandler: handler!
-    public func createTransaction(param: [String:String], viewController: UIViewController, completionHandler :@escaping handler){
+    func createTransaction(param: [String:String], viewController: UIViewController, completionHandler :@escaping (Bool, String) -> Void){
         print("Printing \(param)")
         self.viewController = viewController
-        displayProgressDialog(msg:"Creating Transaction...");
+//        displayProgressDialog(msg:"Creating Transaction...");
         
         // find data from source App
        
-        sendCreateRequest(param: param)
-        _completionHandler = completionHandler
+        self.sendCreateRequest(param: param, completionHandler: { (status , response) -> Void in
+            completionHandler(status, response)
+            })
+       // _completionHandler = completionHandler
     }
     
-    func sendCreateRequest(param : [String: String]){
+    func sendCreateRequest(param : [String: String], completionHandler: @escaping(_ err: Bool, _ resp: String) -> ()){
 
         let orgKey = param["orgKey"] ?? ""
         let securityKey = param["securityKey"] ?? ""
@@ -76,15 +82,22 @@ public class ManchSDKManager : ManchListener{
         let authToken = param["authenticationToken"] ??
         AuthTokenGenerator().generate(orgKey: orgKey, reqId: reqId , securityKey: securityKey)
        
-        networkManager = NetworkManager(reqId: reqId, authToken: authToken)
+        networkManager = NetworkManager()
+//        NetworkManager.acceptTransaction = acceptTransaction
+        NetworkManager.authenticationToken = authToken
+        NetworkManager.requestId = reqId
+        
         let documentReq = DocumentReq.init(documentType: docType, documentStorageId: nil, documentBytes: nil, documentTypeUrl: docUrl)
         
         let request = CreateTransactionReq.init(templateKey: templateKey, firstName: fName, lastName: lName, esignMethod: eSignMethod, mobileNumber: mobileNumber, email: email, preAuth: preAuthType, documents: [documentReq], callbackURL: callbackUrl)
-        networkManager.createTransaction(req: request) { resp, error in
+        networkManager?.createTransaction(req: request) { resp, error in
             //            print("error = \(error) and resp=\(resp)")
+//            completionHandler(error, resp)
+            
             if error != nil {
                 // error case
-                self._completionHandler(false,"Unable to create transaction")
+                //                self.dismissProgressDialog()
+                                completionHandler(false,"error message")
             }else{
                 if let createTxnResponse = resp as? CreateTransactionResponse{
                     // handle the response
@@ -93,67 +106,74 @@ public class ManchSDKManager : ManchListener{
                             self.transactionUrl = txnUrl
                             print("transactionUrl : \(txnUrl)")
                         }
-                        if let doc = createTxnResponse.data?.documents?[0], let docurl = doc.documentLink{
-                        
-                            self.networkManager.getESignUrl(req: docurl) { resp, error in
-                                if error != nil {
-                                    
-                                }else{
-                                    if let esignResponse = resp as? geteSignResponse{
-                                        if let signUrl = esignResponse.data?.signURL{
-                                             self.dismissProgressDialog()
-                                            DispatchQueue.main.async {
-                                    
-                                                let bundle = Bundle(identifier: "blooms.ManchSDK")
-                                                let storyboard = UIStoryboard(name: "ManchStoryboard", bundle: bundle)
-                                                let controller = storyboard.instantiateViewController(withIdentifier: "ManchViewController") as! ManchViewController
-                                                controller.signUrl = signUrl
-                                                controller.deligate = self
-                                                self.viewController?.present(controller, animated: true, completion: nil)
-
-                                            }
-                                        }
-                                    }
-                                    
-                                }
-                            }
+                        if let doc = createTxnResponse.data?.documents?[0], let doclink = doc.documentLink{
+                            completionHandler(true, doclink)
+                            //                            self.sendeSignRequest(docurl: docUrl)
                         }
-                        
-                        //                    if(self.preAuthType == "Y"){
-                        //                        // you can directly call Sign Doc
-                        //                        DispatchQueue.main.async {
-                        //                            //Do UI Code here.
-                        //                            self.sendSignDocRequest()
-                        //                        }
-                        //
-                        //                    }else{
-                        //                        // call the next api
-                        //                        if (self.eSignMethod == "OTP") {
-                        //                            self.sendRequestXML();
-                        //                        }else{
-                        //                           // display UI for Entering OTP received via email / mobile number
-                        //                             self.sendOTPRequest();
-                        //                        }
-                        //                    }
-                    }else{
-                        // invalid response
-                        print("Invalid response")
-                         self._completionHandler(false,"Unable to create transaction")
                     }
-                }else{
-                    // invalid response
-                    print("Invalid response")
-                     self._completionHandler(false,"Unable to create transaction")
+                    
                 }
-                //            print("resp= \(resp)")
-                //            print("error =\(error)")
+        }
+    }
+    }
+    
+    public func eSignDocument(param : [String: String], viewController: UIViewController, completion: @escaping(_ status: Bool, _ resp: String) -> ()){
+        self._completionHandler = completion
+        self.viewController = viewController
+        let reqId = param["requestId"] ?? ""
+        let docUrl = param["documentURL"] ?? ""
+        let acceptTransaction = param["acceptTransaction"] ?? ""
+        let authToken = param["authenticationToken"] ?? ""
+        let environment = param["environment"] ?? ""
+        
+        networkManager = NetworkManager()
+        NetworkManager.acceptTransaction = acceptTransaction
+        NetworkManager.authenticationToken = authToken
+        NetworkManager.requestId = reqId
+        
+        switch environment {
+        case "DEV":
+            NetworkManager.environment = NetworkEnvironment.dev
+        case "PROD":
+            NetworkManager.environment = NetworkEnvironment.production
+        case "UAT":
+            NetworkManager.environment = NetworkEnvironment.uat
+        case "DEV2":
+            NetworkManager.environment = NetworkEnvironment.dev2
+        default:
+            NetworkManager.environment = NetworkEnvironment.dev
+        }
+       
+        
+        self.networkManager?.getESignUrl(req: docUrl) { resp, error in
+            if error != nil {
+                self.dismissProgressDialog()
+                completion(false,"Unable to Sign Document")
+            }else{
+                if let esignResponse = resp as? geteSignResponse{
+                    if let signUrl = esignResponse.data?.signURL{
+                        self.dismissProgressDialog()
+                        DispatchQueue.main.async {
+                            
+                            let bundle = Bundle(identifier: "blooms.ManchSDK")
+                            let storyboard = UIStoryboard(name: "ManchStoryboard", bundle: bundle)
+                            let controller = storyboard.instantiateViewController(withIdentifier: "ManchViewController") as! ManchViewController
+                            controller.signUrl = signUrl
+                            controller.deligate = self
+                            self.viewController?.present(controller, animated: true, completion: nil)
+                            
+                        }
+                    }
+                }
+                
             }
         }
     }
     
     
-    func sendStatusRequest(docurl: String){
-            self.networkManager.getTxnStatus(url: docurl) { resp, error in
+    func sendStatusRequest(){
+//        docurl = transactionUrl
+            self.networkManager?.getTxnStatus(url: transactionUrl) { resp, error in
                 print("error = \(error) and resp=\(resp)")
                 if error != nil {
                     self.dismissProgressDialog();
@@ -210,7 +230,7 @@ public class ManchSDKManager : ManchListener{
     }
     
      func getSignedDocument(url: String){
-            networkManager.getSignDoc(url: url) { resp, error in
+            networkManager?.getSignDoc(url: url) { resp, error in
                  self.dismissProgressDialog()
                 if error != nil {
                     // error case
@@ -220,8 +240,8 @@ public class ManchSDKManager : ManchListener{
                         if let filename = resp as? URL{
                             //let req = NSURLRequest(url: filename)
                             //self.webView.load(req as URLRequest)
-                        
-                            self._completionHandler(true,filename.absoluteString)
+                        print("filename.absoluteString = \(filename.absoluteString)")
+//                            self._completionHandler(true,filename.absoluteString)
                         }
                     }catch {
                         print(error)

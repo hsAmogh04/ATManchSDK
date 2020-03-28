@@ -21,6 +21,7 @@ class  ManchViewController: UIViewController ,WKNavigationDelegate {
     
     
     override func loadView() {
+        super.loadView()
         webView = WKWebView()
         
         webView.navigationDelegate = self
@@ -37,14 +38,29 @@ class  ManchViewController: UIViewController ,WKNavigationDelegate {
     }
    
     
+    
+    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
+                 decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+        
+        if let response = navigationResponse.response as? HTTPURLResponse {
+            print("response.statusCode :: \(response.statusCode)")
+            if response.statusCode != 200 {
+                deligate?.eventCompleted(mode: 1, data: "Failure from URL\(response.url) with response Code \(response.statusCode)")
+                dismiss(animated: true, completion: nil)
+            }
+        }
+        decisionHandler(.allow)
+    }
+    
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        
         if let host = navigationAction.request.url?.absoluteString {
-            if host.starts(with:"https://dev.manchtech.com/nsdl-esp/authenticate/esignCancel"){
+            if host.contains(".manchtech.com/nsdl-esp/authenticate/esignCancel"){
 //                dismiss(animated: true, completion: nil)
                 deligate?.eventCompleted(mode: 1, data: "Cancelled")
                  dismiss(animated: true, completion: nil)
             }
-            else if host.starts(with:"https://dev.manchtech.com/redirect/webview-post-esign.html?"){
+            else if host.starts(with:".manchtech.com/redirect/webview-post-esign.html?"){
                print("transactionUrl \(transactionUrl)")
                 deligate?.eventCompleted(mode: 0, data: transactionUrl)
 //                decisionHandler(.allow)

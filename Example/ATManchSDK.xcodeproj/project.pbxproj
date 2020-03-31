@@ -46,7 +46,7 @@
 		C82A18D954F34AD56252B91B /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		E10111242291AA9928421677 /* Pods-ATManchSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ATManchSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-ATManchSDK_Example/Pods-ATManchSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		E4DBEC1635164C98ED761F6D /* Pods-ATManchSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ATManchSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-ATManchSDK_Example/Pods-ATManchSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
-		F08B0DCBD64D92EA470D0A1A /* ATManchSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = ATManchSDK.podspec; path = ../ATManchSDK.podspec; sourceTree = "<group>"; };
+		F08B0DCBD64D92EA470D0A1A /* ATManchSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = ATManchSDK.podspec; path = ../ATManchSDK.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

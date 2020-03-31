@@ -155,7 +155,7 @@ public class ManchSDKManager : ManchListener{
                         self.dismissProgressDialog()
                         DispatchQueue.main.async {
                             
-                            let bundle = Bundle(identifier: "blooms.ManchSDK")
+                            let bundle = Bundle(identifier: "org.cocoapods.ATManchSDK")
                             let storyboard = UIStoryboard(name: "ManchStoryboard", bundle: bundle)
                             let controller = storyboard.instantiateViewController(withIdentifier: "ManchViewController") as! ManchViewController
                             controller.signUrl = signUrl

@@ -32,7 +32,6 @@ Manch SDK for eSIgn.
   s.ios.deployment_target = '10'
 
   s.source_files = 'ATManchSDK/Classes/**/*'
-  
   # s.resource_bundles = {
   #   'ATManchSDK' => ['ATManchSDK/Assets/*.png']
   # }

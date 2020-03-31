@@ -160,6 +160,7 @@ public class ManchSDKManager : ManchListener{
                             let controller = storyboard.instantiateViewController(withIdentifier: "ManchViewController") as! ManchViewController
                             controller.signUrl = signUrl
                             controller.deligate = self
+                            controller.modalPresentationStyle = .fullScreen
                             self.viewController?.present(controller, animated: true, completion: nil)
                             
                         }

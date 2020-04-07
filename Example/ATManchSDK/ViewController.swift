@@ -16,13 +16,17 @@ class ViewController: UIViewController {
 //         let sdkManager = ManchSDKManager()
 //            let fName = "Atmaram"
 //                   let lName = "Thakur"
-//                   let templateKey = "TMPTS00357"
-//                   let docType = "mono external"
-//                   let orgKey = "TST00019"
-//                   let securityKey = "cPaQHY4RS1Sncoxr"
+////                   let templateKey = "TMPTS00357"
+////                   let docType = "mono external"
+////                   let orgKey = "TST00019"
+////                   let securityKey = "cPaQHY4RS1Sncoxr"
+//                        let templateKey = "TMPTS01124"
+//                         let docType = "Equity Form"
+//                         let orgKey = "TST00113"
+//                         let securityKey = "Nbj329oPtjQm3XjA"
 //                   let docUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
 //        //           let preAuthType = "N"
-//                   let environment = "DEV"
+//                   let environment = "UAT"
 //        //           var eSignMethod = "OTP" //EMAIL_OTP, OTP, MOBILE_OTP
 //                let timeInMiliSecDate = Date()
 //                       let reqId =  "\(timeInMiliSecDate.timeIntervalSince1970 * 1000000 )"
@@ -54,8 +58,8 @@ class ViewController: UIViewController {
 //                                      "acceptTransaction" : "Y",
 //                                      "authenticationToken" : authToken
 //                        ]
-//                sdkManager.eSignDocument(param: params,viewController: self, completion: {(status, response) in
-//                            print("Status=\(status) and response = \(response)")
+//                sdkManager.eSignDocument(param: params,viewController: self, completion: {(status, code, response) in
+//                            print("Status=\(status) code: \(code) and response = \(response)")
 //
 //        //                    if status{
 //        //                        sdkManager.sendStatusRequest()

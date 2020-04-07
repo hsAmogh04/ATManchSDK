@@ -74,12 +74,14 @@ struct CreateTransactionReq : Codable {
     let  firstName: String
     let  lastName:String
     let  esignMethod:String
-    let  mobileNumber:String?
-    let  email:String?
-    let  preAuth:String
+//    let  mobileNumber:String?
+//    let  email:String?
+//    let  preAuth:String
     let  documents: [DocumentReq]
     let  callbackURL: String?
 }
+
+//{,"esignMethod":"OTP","firstName":"Atmaram","lastName":"Thakur","templateKey":"TMPTS00357"}
 
 
 //extension CreateTransactionReq: Decodable {

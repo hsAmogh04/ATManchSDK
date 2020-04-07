@@ -9,7 +9,7 @@
 import Foundation
 
 protocol ManchListener{
-    func eventCompleted(mode: Int, data: Any?)
+    func eventCompleted(mode: Int, code: String, data: Any?)
 }
 
 
@@ -21,7 +21,7 @@ public class ManchSDKManager : ManchListener{
 //         networkManager = NetworkManager(reqId: reqId, authToken: authToken)
     }
     
-    func eventCompleted(mode: Int, data: Any?) {
+    func eventCompleted(mode: Int, code: String, data: Any?) {
         switch mode {
         case 0:
 //            if let txnUrl = data as? String , txnUrl.count > 0{
@@ -30,11 +30,11 @@ public class ManchSDKManager : ManchListener{
 //                 sendStatusRequest(docurl: transactionUrl)
 //            }
             //_completionHandler(true,"")
-             _completionHandler(true,data as? String ?? "")
+             _completionHandler(true, code, data as? String ?? "")
         case 1:
 //             self.displayProgressDialog(msg:"Downloading document...")
 //            sendStatusRequest(docurl: "")
-            _completionHandler(false,data as? String ?? "")
+            _completionHandler(false, code , data as? String ?? "")
         default:
             print("")
         }
@@ -49,7 +49,7 @@ public class ManchSDKManager : ManchListener{
     var transactionUrl = "";
     
     var viewController : UIViewController?
-    public typealias handler = (Bool, String) -> ()
+    public typealias handler = (Bool,String, String) -> ()
     var _completionHandler: handler!
     func createTransaction(param: [String:String], viewController: UIViewController, completionHandler :@escaping (Bool, String) -> Void){
         print("Printing \(param)")
@@ -81,7 +81,20 @@ public class ManchSDKManager : ManchListener{
         let callbackUrl = param["callbackUrl"] ?? "http://dev.manchtech.com:3000/sample-server/esign/callback"
         let authToken = param["authenticationToken"] ??
         AuthTokenGenerator().generate(orgKey: orgKey, reqId: reqId , securityKey: securityKey)
+        let environment = param["environment"] ?? ""
        
+        switch environment {
+              case "DEV":
+                  NetworkManager.environment = NetworkEnvironment.dev
+              case "PROD":
+                  NetworkManager.environment = NetworkEnvironment.production
+              case "UAT":
+                  NetworkManager.environment = NetworkEnvironment.uat
+              case "DEV2":
+                  NetworkManager.environment = NetworkEnvironment.dev2
+              default:
+                  NetworkManager.environment = NetworkEnvironment.dev
+              }
         networkManager = NetworkManager()
 //        NetworkManager.acceptTransaction = acceptTransaction
         NetworkManager.authenticationToken = authToken
@@ -89,7 +102,7 @@ public class ManchSDKManager : ManchListener{
         
         let documentReq = DocumentReq.init(documentType: docType, documentStorageId: nil, documentBytes: nil, documentTypeUrl: docUrl)
         
-        let request = CreateTransactionReq.init(templateKey: templateKey, firstName: fName, lastName: lName, esignMethod: eSignMethod, mobileNumber: mobileNumber, email: email, preAuth: preAuthType, documents: [documentReq], callbackURL: callbackUrl)
+        let request = CreateTransactionReq.init(templateKey: templateKey, firstName: fName, lastName: lName, esignMethod: eSignMethod, documents: [documentReq], callbackURL: callbackUrl)
         networkManager?.createTransaction(req: request) { resp, error in
             //            print("error = \(error) and resp=\(resp)")
 //            completionHandler(error, resp)
@@ -117,7 +130,7 @@ public class ManchSDKManager : ManchListener{
     }
     }
     
-    public func eSignDocument(param : [String: String], viewController: UIViewController, completion: @escaping(_ status: Bool, _ resp: String) -> ()){
+    public func eSignDocument(param : [String: String], viewController: UIViewController, completion: @escaping(_ status: Bool, _ code: String, _ resp: String) -> ()){
         self._completionHandler = completion
         self.viewController = viewController
         let reqId = param["requestId"] ?? ""
@@ -148,7 +161,7 @@ public class ManchSDKManager : ManchListener{
         self.networkManager?.getESignUrl(req: docUrl) { resp, error in
             if error != nil {
                 self.dismissProgressDialog()
-                completion(false,"Unable to Sign Document")
+                completion(false,"", "Unable to Sign Document")
             }else{
                 if let esignResponse = resp as? geteSignResponse{
                     if let signUrl = esignResponse.data?.signURL{
@@ -178,7 +191,7 @@ public class ManchSDKManager : ManchListener{
                 print("error = \(error) and resp=\(resp)")
                 if error != nil {
                     self.dismissProgressDialog();
-                    self._completionHandler(false,"Unable to get Status")
+                    self._completionHandler(false, "", "Unable to get Status")
                 }else{
                     if let response = resp as? StatusResponse{
                         if let docs = response.data?.documents{
@@ -235,7 +248,7 @@ public class ManchSDKManager : ManchListener{
                  self.dismissProgressDialog()
                 if error != nil {
                     // error case
-                     self._completionHandler(false,"Unable to get sign document")
+                     self._completionHandler(false,"", "Unable to get sign document")
                 }else{
                     do{
                         if let filename = resp as? URL{

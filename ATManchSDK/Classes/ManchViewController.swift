@@ -107,7 +107,7 @@ class  ManchViewController: UIViewController ,WKNavigationDelegate {
 extension String {
     public var decodeString: String? {
         var byteArray: [UInt8] = []
-        let stringArray: [String] = characters.map { String($0) }
+        let stringArray: [String] = map { String($0) }
         var index: Int = 0
         while index < stringArray.count {
             let char: String = stringArray[index]
